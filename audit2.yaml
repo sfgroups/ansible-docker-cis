@@ -1,0 +1,21 @@
+- name: Create new rules file
+  copy:
+    src: 01-personalized.rules
+    dest: /etc/audit/rules.d/01-personalized.rules
+    owner: root
+    group: root
+    mode: 0600
+  register: result
+
+- name: Reboot server
+  shell: "sleep 5 && reboot"
+  async: 1
+  poll: 0
+  when: result is changed
+
+- name: Wait for server to become available
+  wait_for_connection:
+    delay: 60
+    sleep: 5
+    timeout: 300
+  when: result is changed
