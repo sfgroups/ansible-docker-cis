@@ -1,0 +1,15 @@
+---
+- hosts: 192.168.100.250
+  gather_facts: true
+  remote_user: locadmin
+  become: true
+ 
+  tasks:
+  - name: configure auditd
+    template: src=audit.rules.temp dest=/etc/audit/rules.d/audit.rules
+    notify:
+   - restart auditd
+ 
+  handlers:
+    - name: restart auditd
+      service: name=auditd state=restarted use=service
